@@ -22,33 +22,17 @@ repositories {
 val repoUrl = ""
 lateinit var releaseVersion: String
 
-//publishing {
-//    repositories {
-//        maven {
-//            url = uri(System.getProperty("repo.url"))
-//            credentials {
-//                username = System.getProperty("repo.username")
-//                password = System.getProperty("repo.password")
-//            }
-//        }
-//    }
-//}
 publishing {
     repositories {
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/vanioinformatika/maven-releases")
             credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+                username = System.getenv("GPR_USERNAME")
+                password = System.getenv("GPR_TOKEN")
             }
         }
     }
-//    publications {
-//        register<MavenPublication>("gpr") {
-//            from(components["java"])
-//        }
-//    }
 }
 
 release {

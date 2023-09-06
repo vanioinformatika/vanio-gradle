@@ -1,10 +1,7 @@
 rootProject.name = "vanio-gradle"
 
-includeBuild("plugin") {
-    name = "pluginBuild"
-}
+includeBuild("plugin")
 include(
-    "plugin",
     "dummy",
     "dummy:lib",
     "dummy:app"

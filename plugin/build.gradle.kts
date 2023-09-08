@@ -28,8 +28,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/vanioinformatika/maven-releases")
             credentials {
-                username = System.getenv("GPR_USERNAME").also { println("user:$it") }
-                password = System.getenv("GPR_TOKEN").also { println("token:$it") }
+                username = System.getenv("GPR_USERNAME")
+                password = System.getenv("GPR_TOKEN")
             }
         }
     }

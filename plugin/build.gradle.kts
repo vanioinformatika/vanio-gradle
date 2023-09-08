@@ -28,8 +28,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/vanioinformatika/maven-releases")
             credentials {
-                username = System.getenv("GPR_USERNAME")
-                password = System.getenv("GPR_TOKEN")
+                username = System.getenv("GPR_USERNAME").also { println("user:$it") }
+                password = System.getenv("GPR_TOKEN").also { println("token:$it") }
             }
         }
     }
@@ -37,6 +37,7 @@ publishing {
 
 release {
     failOnPublishNeeded = false
+    failOnCommitNeeded = false
     tagTemplate = "\$name-\$version"
     scmAdapters = listOf(GitAdapter::class.java)
     git {

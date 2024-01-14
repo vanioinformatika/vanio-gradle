@@ -4,5 +4,6 @@ includeBuild("plugin")
 include(
     "dummy",
     "dummy:lib",
-    "dummy:app"
+    "dummy:app",
+    "dummy:appSpring"
 )

@@ -25,9 +25,9 @@ pluginManagement {
 Add the necessary plugin (or plugins) to the ```plugins``` block in the ```build.gradle.kts```
 ```kotlin
 plugins {
-    id("hu.vanio.gradle.common") version "0.0.2"
-    id("hu.vanio.gradle.testReport") version "0.0.2"
-    id("hu.vanio.gradle.apiDocs") version "0.0.2"
+    id("hu.vanio.gradle.common") version "0.0.3"
+    id("hu.vanio.gradle.testReport") version "0.0.3"
+    id("hu.vanio.gradle.apiDocs") version "0.0.3"
 }
 
 ```

@@ -22,26 +22,29 @@ tasks.create("generateDocs") {
         } ?: throw RuntimeException("Function 'groupedApiMappings' not found.")
         val outputFileName = openApiExt::class.members.firstOrNull {
             it.name == "outputFileName"
-        } ?: throw RuntimeException("Founction 'outputFileName' not found.")
+        } ?: throw RuntimeException("Function 'outputFileName' not found.")
         var docList = (groupedApiMappings.call(openApiExt) as MapProperty<String, String>).get().map { it.value }
         if (docList.isEmpty()) {
             docList = listOf((outputFileName.call(openApiExt) as Property<String>).get())
         }
         exec {
             workingDir("$buildDir")
-            commandLine(if (Os.isFamily(Os.FAMILY_WINDOWS)) "npm.cmd" else "npm", "i", "-g", "redoc-cli")
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine("npm.cmd", "i", "-g", "redoc-cli")
+            } else {
+                commandLine("bash", "-lc", "npm i -g redoc-cli")
+            }
         }
         docList.forEach { docnameTeljes ->
             val docname = docnameTeljes.removeSuffix(".json")
             println("doc: $docname")
             exec {
                 workingDir(outputDirString)
-                commandLine(
-                    if (Os.isFamily(Os.FAMILY_WINDOWS)) "npx.cmd" else "npx",
-                    "redoc-cli",
-                    "build",
-                    "$docname.json"
-                )
+                if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                    commandLine("npx.cmd", "redoc-cli", "build", "$docname.json")
+                } else {
+                    commandLine("bash", "-lc", "npx redoc-cli build $docname.json")
+                }
             }
             copy {
                 from(outputDirString)

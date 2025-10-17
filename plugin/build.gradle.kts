@@ -9,7 +9,7 @@ plugins {
 group = "hu.vanio.gradle"
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 repositories {
@@ -82,6 +82,6 @@ tasks.createReleaseTag {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kover:0.6.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+    implementation("org.jetbrains.kotlinx:kover-gradle-plugin:0.9.3")
+//    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
 }

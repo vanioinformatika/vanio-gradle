@@ -1,7 +1,8 @@
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlin.time.toDuration
 
+@file:OptIn(kotlin.time.ExperimentalTime::class)
 /**
  * Test results summarizing
  */
@@ -85,8 +86,9 @@ val ANSI_RED = "\u001B[31m"
 val ANSI_GREEN = "\u001B[32m"
 
 val testTetel = mutableListOf<TestResultData>()
+@OptIn(kotlin.time.ExperimentalTime::class)
 val testSuites = mutableMapOf<TestDescriptor, Instant>()
-val testsum = tasks.create("testsum") {
+val testsum = tasks.register("testsum") {
     doLast {
         if (testTetel.isNotEmpty()) {
             val nameLength = testTetel.maxByOrNull { it.name.length }?.name?.length ?: 0

@@ -1,8 +1,8 @@
 plugins {
-    kotlin("jvm") version "1.8.21"
-    kotlin("plugin.spring") version "1.8.21"
-    id("org.springframework.boot") version "3.2.1"
-    id("org.springdoc.openapi-gradle-plugin")  version "1.8.0"
+    kotlin("jvm")
+    kotlin("plugin.spring") version "2.2.20"
+    id("org.springframework.boot") version "3.5.6"
+    id("org.springdoc.openapi-gradle-plugin")  version "1.9.0"
     id("hu.vanio.gradle.apiDocs")
 }
 

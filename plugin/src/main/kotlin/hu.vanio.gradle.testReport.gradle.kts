@@ -1,33 +1,14 @@
+@file:OptIn(kotlin.time.ExperimentalTime::class)
+
+import org.gradle.api.tasks.testing.AbstractTestTask
+import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.time.toDuration
 
-@file:OptIn(kotlin.time.ExperimentalTime::class)
 /**
  * Test results summarizing
  */
-allprojects {
-    afterEvaluate {
-        tasks.withType(Test::class.java) {
-            finalizedBy(testsum)
-            addTestListener(object : TestListener {
-                override fun beforeSuite(suite: TestDescriptor) {
-                    testSuites[suite] = Clock.System.now()
-                }
-                override fun beforeTest(testDescriptor: TestDescriptor) {
-                    val start = testSuites.remove(testDescriptor.parent)
-                    if (start != null) {
-                        testTetel.add(TestResultData("${this@allprojects.name}:${this@withType.name}", 0, 0, 0, 0, 0, (Clock.System.now() - start).inWholeMilliseconds))
-                    }
-                }
-                override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {
-                    testTetel.add(TestResultData("${this@allprojects.name}:${this@withType.name}", result.testCount, result.successfulTestCount, result.failedTestCount, result.skippedTestCount, result.endTime - result.startTime, 0, result.resultType))
-                }
-                override fun afterSuite(suite: TestDescriptor, result: TestResult) {}
-            })
-        }
-    }
-}
 
 data class TestResultData(
     val name: String,
@@ -85,9 +66,7 @@ val ANSI_BLACK = "\u001B[30m"
 val ANSI_RED = "\u001B[31m"
 val ANSI_GREEN = "\u001B[32m"
 
-val testTetel = mutableListOf<TestResultData>()
-@OptIn(kotlin.time.ExperimentalTime::class)
-val testSuites = mutableMapOf<TestDescriptor, Instant>()
+val testTetel = ConcurrentLinkedQueue<TestResultData>()
 val testsum = tasks.register("testsum") {
     doLast {
         if (testTetel.isNotEmpty()) {
@@ -114,5 +93,44 @@ val testsum = tasks.register("testsum") {
                     println(ANSI_BOLD_ON + testEredmeny.copy(name = "SUM").toString(nameLength, numLength) + ANSI_RESET)
                 } // sum
         }
+    }
+}
+
+allprojects {
+    val testTasks = tasks.withType(AbstractTestTask::class.java)
+    // Ordering only: requesting testsum must not schedule otherwise unrequested tests.
+    testsum.configure { mustRunAfter(testTasks) }
+    testTasks.configureEach {
+        val taskName = "${this@allprojects.name}:$name"
+        finalizedBy(testsum)
+        addTestListener(object : TestListener {
+            override fun beforeSuite(suite: TestDescriptor) {}
+            override fun beforeTest(testDescriptor: TestDescriptor) {}
+            override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {
+                // Leaf results only; suite results already contain these tests.
+                testTetel.add(TestResultData(taskName, result.testCount, result.successfulTestCount, result.failedTestCount, result.skippedTestCount, result.endTime - result.startTime, 0, result.resultType))
+            }
+            override fun afterSuite(suite: TestDescriptor, result: TestResult) {}
+        })
+    }
+    tasks.withType(Test::class.java).configureEach {
+        val taskName = "${this@allprojects.name}:$name"
+        // Preserve the JVM suite startup measurement, without inventing browser context time.
+        val testSuites = mutableMapOf<TestDescriptor, Instant>()
+        addTestListener(object : TestListener {
+            override fun beforeSuite(suite: TestDescriptor) {
+                testSuites[suite] = Clock.System.now()
+            }
+            override fun beforeTest(testDescriptor: TestDescriptor) {
+                val start = testSuites.remove(testDescriptor.parent)
+                if (start != null) {
+                    testTetel.add(TestResultData(taskName, contextTime = (Clock.System.now() - start).inWholeMilliseconds))
+                }
+            }
+            override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {}
+            override fun afterSuite(suite: TestDescriptor, result: TestResult) {
+                testSuites.remove(suite)
+            }
+        })
     }
 }

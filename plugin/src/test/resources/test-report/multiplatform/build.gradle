@@ -1,0 +1,20 @@
+plugins {
+    id 'org.jetbrains.kotlin.multiplatform' version '2.2.20'
+}
+repositories { mavenCentral() }
+kotlin {
+    jvm()
+    js {
+        browser {
+            testTask { useKarma { useChromeHeadless() } }
+        }
+    }
+    wasmJs {
+        browser {
+            testTask { useKarma { useChromeHeadless() } }
+        }
+    }
+    sourceSets {
+        commonTest { dependencies { implementation kotlin('test') } }
+    }
+}

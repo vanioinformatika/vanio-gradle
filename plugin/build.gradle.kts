@@ -82,6 +82,8 @@ tasks.createReleaseTag {
 }
 
 dependencies {
+    testImplementation(gradleTestKit())
+    testImplementation("junit:junit:4.13.2")
     implementation("org.jetbrains.kotlinx:kover-gradle-plugin:0.9.3")
 //    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
 }
